@@ -4,6 +4,12 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.colors
+import matplotlib.animation as animation
+
+# FFMPEG PATH :
+# =============
+#plt.rcParams['animation.ffmpeg_path'] = r"C:\Users\dlouapre\Documents\DATA\python\[ffmpeg]\bin\ffmpeg"
+plt.rcParams['animation.ffmpeg_path'] = r'/Volumes/Data/Youtube/[ffmpeg]/ffmpeg'
 
 # for complex number operations
 from cmath import exp, pi, log, sqrt, phase
@@ -11,7 +17,7 @@ from cmath import exp, pi, log, sqrt, phase
 U0 = 1              # Velocity
 a = 1               # Radius
 b = 0.05            # Joukowski shift
-c = 0.9             #        Joukowski deformation
+c = 0.9           #        Joukowski deformation
 alpha = 15/180*pi   # Angle of the flow
 
 gamma = -4*pi*U0*(a+b)*np.sin(alpha)   # Circulation to get Kutta condition
@@ -53,19 +59,25 @@ invConfMap = invJouk
 
 # Range in X and Y    
 W = 6
-Y, X = np.mgrid[-W:W:300j, -W:W:300j]
+Y, X = np.mgrid[-W:W:100j, -W:W:100j]   #300
 Z = X + 1j * Y
+
 
 
 # Compute velocity using potential derivative
 # Taking into account z0 shift and inverse conformal map
-eps = 0.0001
+def complexVelocity(z):
+    eps = 0.0001
+    dwdz = (f(invConfMap(z+eps)-z0) - f(invConfMap(z)-z0))/eps
+    return dwdz
+
+
+
 U = np.zeros(Z.shape)
 V = np.zeros(Z.shape)
 for i in range(Z.shape[0]):
-    for j in range(Z.shape[1]):
-        z = Z[i,j]    
-        dwdz = (f(invConfMap(z+eps)-z0) - f(invConfMap(z)-z0))/eps        
+    for j in range(Z.shape[1]):  
+        dwdz = complexVelocity(Z[i,j])        
         U[i,j] = dwdz.real
         V[i,j] = -dwdz.imag
 
@@ -80,11 +92,11 @@ P = - (U**2 + V**2) + U0**2
 ########
 
 # Plot
-fig = plt.figure(figsize=(16,16),dpi=200)
+fig = plt.figure(figsize=(16,16),dpi=50)  #200
 ax = fig.add_subplot(111)
 
 # Seeds for the stream lines
-K = 80
+K = 20   #80
 seeds = np.array([[-0.99*W]*K, np.linspace(-0.99*W,0.99*W,K)])
 
 # Optionnaly color 
@@ -103,7 +115,7 @@ ax.set_xlim(-W,W)
 ax.set_ylim(-W,W)
 
 # Add a mask (at higher resolution for the shape of the wing)
-Yr, Xr = np.mgrid[-W:W:2000j, -W:W:2000j]
+Yr, Xr = np.mgrid[-W:W:400j, -W:W:400j]   #2000
 Zr = Xr + 1j*Yr
 mask = np.zeros(Zr.shape,dtype=bool)
 level = np.zeros(Zr.shape)
@@ -141,12 +153,34 @@ ax.imshow(immask, extent=(-W, W, -W, W), aspect='auto')
         
 ax.set_aspect(1)
 
+OUTPUT = True
+name = "test"
+NFRAMES = 300
+FPS = 30
+STEP = 50
+DT = 0.001
 
-#particles = [np.r[-5,0]]
+particles = [np.r_[seeds[0,k],seeds[1,k]] for k in range(K)]
+
+trajectories = [ax.plot(x[0],x[1],'or')[0] for x in particles]
+
+def update(i):
+    print("Frame "+str(i))
+    for k in range(len(particles)):
+        for s in range(STEP):
+            zpart = particles[k][0] + 1j * particles[k][1]
+            zvel = complexVelocity(zpart)
+            particles[k][0] += zvel.real * DT
+            particles[k][1] += - zvel.imag * DT
+        trajectories[k].set_data(particles[k][0],particles[k][1])
+
+ani = animation.FuncAnimation(fig, update, frames = NFRAMES)
+
+if OUTPUT:    
+    writer = animation.FFMpegWriter(fps=FPS, bitrate = None)
+    ani.save(name+".mp4", writer = writer, savefig_kwargs={'facecolor':'black'})
+else:
+    plt.show() 
 
 
-
-
-
-
-plt.savefig("test.png")
+#plt.savefig("test.png")
