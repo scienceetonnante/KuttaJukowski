@@ -20,7 +20,7 @@ XMAX = 8
 YMIN = -4.5
 YMAX = 4.5
 V0 = 1
-WIND = 0.2
+WIND = 1
 L = 0.1
 
 
@@ -38,7 +38,7 @@ for i in range(N):
             if(r[0]**2 + r[1]**2 < L**2):
                 fnd = False
 
-winds = WIND + np.vstack((np.ones(N),np.zeros(N))).T
+winds = WIND * np.vstack((np.ones(N),np.zeros(N))).T
 
 # Initial angle
 angles = np.r_[uniform(0,2*np.pi,N)]
@@ -80,8 +80,10 @@ def update(f):
             #angles[i] = np.pi - angles[i]
             positions[i,0] = XMIN + (positions[i,0] - XMAX)
         if(positions[i,1]<YMIN):
+            positions[i,1] = YMIN + (YMIN - positions[i,1])
             angles[i] = 2*np.pi - angles[i]
         if(positions[i,1]>YMAX):
+            positions[i,1] = YMAX - (positions[i,1] - YMAX)
             angles[i] = 2*np.pi - angles[i]
             
     

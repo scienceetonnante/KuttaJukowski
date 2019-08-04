@@ -97,8 +97,8 @@ fig = plt.figure(figsize=(16,16),dpi=200)
 ax = fig.add_subplot(111)
 
 # Seeds for the stream lines
-K = 39
-seeds = np.array([[-0.99*W]*K, np.linspace(-0.99*W,0.99*W,K)])
+K = 25
+seeds = np.array([[-0.8*W]*K, np.linspace(-0.99*W,0.99*W,K)])
 
 # Optionnaly color 
 col = np.sqrt(U**2 + V**2)
@@ -175,6 +175,10 @@ def update(i):
             zvel = complexVelocity(zpart)
             particles[k][0] += zvel.real * DT
             particles[k][1] += - zvel.imag * DT
+            if(particles[k][0]<-W):
+                print("Problem")
+                print("Particle" + str(k))
+                print("Step"+str(s))
         trajectories[k].set_data(particles[k][0],particles[k][1])
 
 ani = animation.FuncAnimation(fig, update, frames = NFRAMES)
