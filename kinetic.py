@@ -13,7 +13,7 @@ import matplotlib.animation as animation
 plt.rcParams['animation.ffmpeg_path'] = r'/Volumes/Data/Youtube/[ffmpeg]/ffmpeg'
 
 
-N = 500
+N = 250 # 500
 
 XMIN = -8
 XMAX = 8
@@ -52,7 +52,7 @@ ax.set_aspect(1)
 
 
 OUTPUT = True
-name = "kinetic"
+name = "kinetic low density"
 NFRAMES = 6000
 FPS = 30
 DT = 0.01
