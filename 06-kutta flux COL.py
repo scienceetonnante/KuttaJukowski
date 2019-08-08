@@ -106,10 +106,10 @@ normalizer = matplotlib.colors.Normalize(0,2)
 
 # col = "black"
 # Density high enough to make sure all lines are ploted
-#ax.streamplot(X, Y, U, V, start_points = seeds.T, integration_direction = 'forward', 
-#              density=10, linewidth=2, color = col, norm=normalizer,cmap="jet", arrowstyle="-")
 ax.streamplot(X, Y, U, V, start_points = seeds.T, integration_direction = 'forward', 
-              density=10, linewidth=2, color="slategray", arrowstyle="-") # "seismic"
+              density=10, linewidth=2, color = col, norm=normalizer,cmap="jet", arrowstyle="-")
+#ax.streamplot(X, Y, U, V, start_points = seeds.T, integration_direction = 'forward', 
+#              density=10, linewidth=2, color="slategray", arrowstyle="-") # "seismic"
 
 
 ax.set_xlim(-W,W)

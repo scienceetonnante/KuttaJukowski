@@ -14,13 +14,14 @@ plt.rcParams['animation.ffmpeg_path'] = r'/Volumes/Data/Youtube/[ffmpeg]/ffmpeg'
 # for complex number operations
 from cmath import exp, pi, log, sqrt
 
+name = "kutta jukowski POC"
 
 U0 = 1              # Velocity
 a = 1               # Radius
 b1 = 0.05           # Joukowski shift real
 b2 = 0.2            # Joukowski shift imag
 c = 0.9             # Joukowski deformation
-alpha = 10/180*pi   # Angle of the flow
+alpha = 20/180*pi   # Angle of the flow
 
 
 # Circulation to get Kutta condition
@@ -72,7 +73,7 @@ def complexVelocity(z):
 ###############    
 
 # Range in X and Y    
-W = 6
+W = 16
 Y, X = np.mgrid[-W:W:300j, -W:W:300j]
 Z = X + 1j * Y
 
@@ -94,7 +95,7 @@ P = - (U**2 + V**2) + U0**2
 ########
 
 # Plot
-fig = plt.figure(figsize=(16,16),dpi=40)
+fig = plt.figure(figsize=(16,16),dpi=300)
 ax = fig.add_subplot(111)
 
 # Seeds for the stream lines
@@ -107,10 +108,10 @@ normalizer = matplotlib.colors.Normalize(0,2)
 
 # col = "black"
 # Density high enough to make sure all lines are ploted
-ax.streamplot(X, Y, U, V, start_points = seeds.T, integration_direction = 'forward', 
-              density=10, linewidth=2, color = col, norm=normalizer,cmap="jet", arrowstyle="-")
 #ax.streamplot(X, Y, U, V, start_points = seeds.T, integration_direction = 'forward', 
-#              density=10, linewidth=2, color="slategray", arrowstyle="-") # "seismic"
+#              density=10, linewidth=2, color = col, norm=normalizer,cmap="jet", arrowstyle="-")
+ax.streamplot(X, Y, U, V, start_points = seeds.T, integration_direction = 'forward', 
+              density=10, linewidth=2, color="slategray", arrowstyle="-") # "seismic"
 
 
 ax.set_xlim(-W,W)
@@ -130,7 +131,7 @@ for i in range(immask.shape[0]):
         else:
             immask[i,j,3] = 0.0
 
-ax.imshow(P[::-1,:], extent=(-W, W, -W, W), alpha=0.6, cmap='bwr', clim = (-2,2), aspect='auto')
+#ax.imshow(P[::-1,:], extent=(-W, W, -W, W), alpha=0.6, cmap='bwr', clim = (-2,2), aspect='auto')
 ax.imshow(immask[::-1,:], extent=(-W, W, -W, W), aspect='auto')
 
        
@@ -147,35 +148,36 @@ ax.imshow(immask[::-1,:], extent=(-W, W, -W, W), aspect='auto')
 ax.set_aspect(1)
 
 
-OUTPUT = True
-name = "kutta jukowski POC"
-NFRAMES = 450
-FPS = 30
-STEP = 30
-DT = 0.001
 
-particles = [np.r_[seeds[0,k],seeds[1,k]] for k in range(K)]
-
-trajectories = [ax.plot(x[0],x[1],'o',color="magenta",markersize=12)[0] for x in particles]
-
-
-def update(i):
-    print("Frame "+str(i))
-    for k in range(len(particles)):
-        for s in range(STEP):
-            zpart = particles[k][0] + 1j * particles[k][1]
-            zvel = complexVelocity(zpart)
-            particles[k][0] += zvel.real * DT
-            particles[k][1] += - zvel.imag * DT
-        trajectories[k].set_data(particles[k][0],particles[k][1])
-
-ani = animation.FuncAnimation(fig, update, frames = NFRAMES)
-
-if OUTPUT:    
-    writer = animation.FFMpegWriter(fps=FPS, bitrate = None)
-    ani.save(name+".mp4", writer = writer)
-else:
-    plt.show() 
+#OUTPUT = True
+#
+#NFRAMES = 450
+#FPS = 30
+#STEP = 30
+#DT = 0.001
+#
+#particles = [np.r_[seeds[0,k],seeds[1,k]] for k in range(K)]
+#
+#trajectories = [ax.plot(x[0],x[1],'o',color="magenta",markersize=12)[0] for x in particles]
+#
+#
+#def update(i):
+#    print("Frame "+str(i))
+#    for k in range(len(particles)):
+#        for s in range(STEP):
+#            zpart = particles[k][0] + 1j * particles[k][1]
+#            zvel = complexVelocity(zpart)
+#            particles[k][0] += zvel.real * DT
+#            particles[k][1] += - zvel.imag * DT
+#        trajectories[k].set_data(particles[k][0],particles[k][1])
+#
+#ani = animation.FuncAnimation(fig, update, frames = NFRAMES)
+#
+#if OUTPUT:    
+#    writer = animation.FFMpegWriter(fps=FPS, bitrate = None)
+#    ani.save(name+".mp4", writer = writer)
+#else:
+#    plt.show() 
 
 
 plt.savefig(name+".png")
