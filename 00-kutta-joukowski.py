@@ -14,7 +14,7 @@ plt.rcParams['animation.ffmpeg_path'] = r'/Volumes/Data/Youtube/[ffmpeg]/ffmpeg'
 # for complex number operations
 from cmath import exp, pi, log, sqrt
 
-name = "kutta jukowski POC"
+name = "kutta jukowski circulation"
 
 U0 = 1              # Velocity
 a = 1               # Radius
@@ -73,8 +73,8 @@ def complexVelocity(z):
 ###############    
 
 # Range in X and Y    
-W = 16
-Y, X = np.mgrid[-W:W:300j, -W:W:300j]
+W = 4
+Y, X = np.mgrid[-W:W:30j, -W:W:30j]
 Z = X + 1j * Y
 
 
@@ -110,9 +110,10 @@ normalizer = matplotlib.colors.Normalize(0,2)
 # Density high enough to make sure all lines are ploted
 #ax.streamplot(X, Y, U, V, start_points = seeds.T, integration_direction = 'forward', 
 #              density=10, linewidth=2, color = col, norm=normalizer,cmap="jet", arrowstyle="-")
-ax.streamplot(X, Y, U, V, start_points = seeds.T, integration_direction = 'forward', 
-              density=10, linewidth=2, color="slategray", arrowstyle="-") # "seismic"
+#ax.streamplot(X, Y, U, V, start_points = seeds.T, integration_direction = 'forward', 
+#              density=10, linewidth=2, color="slategray", arrowstyle="-") # "seismic"
 
+ax.quiver(X,Y,U - U0,V)
 
 ax.set_xlim(-W,W)
 ax.set_ylim(-W,W)
@@ -131,7 +132,7 @@ for i in range(immask.shape[0]):
         else:
             immask[i,j,3] = 0.0
 
-#ax.imshow(P[::-1,:], extent=(-W, W, -W, W), alpha=0.6, cmap='bwr', clim = (-2,2), aspect='auto')
+ax.imshow(P[::-1,:], extent=(-W, W, -W, W), alpha=0.6, cmap='bwr', clim = (-2,2), aspect='auto')
 ax.imshow(immask[::-1,:], extent=(-W, W, -W, W), aspect='auto')
 
        
@@ -140,12 +141,12 @@ ax.imshow(immask[::-1,:], extent=(-W, W, -W, W), aspect='auto')
 #ys = []
 #for t in np.arange(0,2*pi,0.01):
 #    z = a*exp(1j*t)            
-#    Z = Jouk(z,z0)
-#    xs.append(Z.real)
-#    ys.append(Z.imag)
+#    Z = exp(-2*1j*alpha)*Jouk(z)
+#    xs.append(-Z.real)
+#    ys.append(-Z.imag)
 #ax.plot(xs,ys,'--')
-        
-ax.set_aspect(1)
+#        
+#ax.set_aspect(1)
 
 
 
